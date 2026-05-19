@@ -361,7 +361,7 @@
             <button class="btn-primary" onclick="importJSON()">📥 Importar</button>
             <button class="btn-primary" onclick="exportJSON()">📤 JSON</button>
             <button class="btn-primary" onclick="exportCSV()">📄 CSV</button>
-            <button class="btn-success" onclick="openModal('new')">➕ Lutador</button>
+            <button class="btn-success" onclick="openModal('new')">➕ Atleta</button>
         </div>
     </header>
 
@@ -373,7 +373,7 @@
     <div class="modal" id="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 id="modal-title">Novo Lutador</h2>
+                <h2 id="modal-title">Novo Atleta</h2>
             </div>
             <div class="modal-body">
                 <div class="form-group">
@@ -623,7 +623,7 @@
 
         function openModal(type, id = null) {
             editingId = type === 'edit' ? id : null;
-            document.getElementById('modal-title').textContent = type === 'new' ? 'Novo Lutador' : 'Editar Lutador';
+            document.getElementById('modal-title').textContent = type === 'new' ? 'Novo Atleta' : 'Editar Atleta';
 
             document.getElementById('nome').value = '';
             document.getElementById('genero').value = '';
@@ -715,7 +715,7 @@
         }
 
         function deleteFighter(id) {
-            if (confirm('Tem certeza que deseja deletar este lutador?')) {
+            if (confirm('Tem certeza que deseja deletar este atleta?')) {
                 fighters = fighters.filter(f => f.id !== id);
                 saveToStorage();
                 render();
@@ -732,7 +732,7 @@
             document.getElementById('stats').innerHTML = `
                 <div class="stat-card">
                     <div class="number">${total}</div>
-                    <div class="label">Lutadores</div>
+                    <div class="label">Atletas</div>
                 </div>
             `;
         }
@@ -743,8 +743,8 @@
             if (fighters.length === 0) {
                 grid.innerHTML = `
                     <div class="empty-state">
-                        <h2>Nenhum lutador cadastrado</h2>
-                        <p>Clique em "+Lutador" para começar</p>
+                        <h2>Nenhum Atleta cadastrado</h2>
+                        <p>Clique em "+Atleta" para começar</p>
                     </div>
                 `;
                 return;
@@ -829,7 +829,7 @@
 
         function exportJSON() {
             if (fighters.length === 0) {
-                alert('Nenhum lutador para exportar!');
+                alert('Nenhum atleta para exportar!');
                 return;
             }
 
@@ -848,7 +848,7 @@
 
         function exportCSV() {
             if (fighters.length === 0) {
-                alert('Nenhum lutador para exportar!');
+                alert('Nenhum atleta para exportar!');
                 return;
             }
 
