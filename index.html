@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BD Judo Aguaí</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f5f5f5;
+            color: #1a1a1a;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        body.dark-mode {
+            background-color: #1a1a1a;
+            color: #f5f5f5;
+        }
+
+        header {
+            background: #fff;
+            padding: 24px 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            transition: background-color 0.3s ease;
+        }
+
+        body.dark-mode header {
+            background: #2a2a2a;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+
+        .header-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        header h1 {
+            font-size: 28px;
+            font-weight: 600;
+            text-align: center;
+            flex: 1;
+        }
+
+        .theme-toggle {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+            padding: 8px;
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.1);
+        }
+
+        .button-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 10px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        button {
+            padding: 12px 16px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary { background-color: #1a1a1a; color: #fff; }
+        .btn-primary:hover { background-color: #333; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        
+        body.dark-mode .btn-primary { background-color: #f5f5f5; color: #1a1a1a; }
+        body.dark-mode .btn-primary:hover { background-color: #ddd; }
+
+        .btn-success { background-color: #28a745; color: #fff; }
+        .btn-success:hover { background-color: #218838; }
+        .btn-danger { background-color: #dc3545; color: #fff; }
+        .btn-danger:hover { background-color: #c82333; }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 16px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: #fff;
+            padding: 16px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            transition: background-color 0.3s ease;
+        }
+
+        body.dark-mode .stat-card {
+            background: #2a2a2a;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+
+        .stat-card .number { font-size: 24px; font-weight: 700; }
+        .stat-card .label { font-size: 12px; color: #666; margin-top: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        body.dark-mode .stat-card .label { color: #aaa; }
+
+        .fighters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            border-left: 6px solid #1a1a1a;
+        }
+
+        body.dark-mode .card {
+            background: #2a2a2a;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+
+        .card:hover {
+            box-shadow: 0 8px 16px rgba(0,0,0,0.12);
+            transform: translateY(-4px);
+        }
+
+        body.dark-mode .card:hover {
+            box-shadow: 0 8px 16px rgba(0,0,0,0.4);
+        }
+
+        .card-header {
+            padding: 16px;
+            background: linear-gradient(135deg, #f8f8f8, #fff);
+            border-bottom: 1px solid #eee;
+            transition: background 0.3s ease;
+        }
+
+        body.dark-mode .card-header {
+            background: linear-gradient(135deg, #333, #2a2a2a);
+            border-bottom: 1px solid #444;
+        }
+
+        .card-header h3 { font-size: 18px; font-weight: 600; margin-bottom: 4px; }
+
+        .card-header .faixa-badge {
+            display: inline-block;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 4px 12px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .card-body {
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+        }
+
+        .info-label { color: #666; font-weight: 500; }
+        .info-value { color: #1a1a1a; font-weight: 600; }
+
+        body.dark-mode .info-label { color: #aaa; }
+        body.dark-mode .info-value { color: #f5f5f5; }
+
+        .card-footer {
+            padding: 12px 16px;
+            border-top: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: border-color 0.3s ease;
+        }
+
+        body.dark-mode .card-footer {
+            border-top: 1px solid #444;
+        }
+
+        .delete-btn {
+            background-color: #dc3545;
+            color: #fff;
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .delete-btn:hover { background-color: #c82333; transform: scale(1.1); }
+
+        .empty-state {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .empty-state h2 { font-size: 24px; color: #666; margin-bottom: 12px; }
+        .empty-state p { color: #999; font-size: 14px; }
+
+        body.dark-mode .empty-state h2 { color: #aaa; }
+        body.dark-mode .empty-state p { color: #777; }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal.active { display: flex; }
+
+        .modal-content {
+            background: #fff;
+            border-radius: 8px;
+            padding: 32px;
+            max-width: 500px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            transition: background-color 0.3s ease;
+        }
+
+        body.dark-mode .modal-content {
+            background: #2a2a2a;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+        }
+
+        .modal-header { margin-bottom: 24px; }
+        .modal-header h2 { font-size: 24px; font-weight: 600; margin: 0; }
+
+        .modal-body { margin-bottom: 24px; }
+
+        .form-group { margin-bottom: 20px; }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #1a1a1a;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: color 0.3s ease;
+        }
+
+        body.dark-mode .form-group label {
+            color: #f5f5f5;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: all 0.2s ease;
+            background-color: #fff;
+            color: #1a1a1a;
+        }
+
+        body.dark-mode .form-group input,
+        body.dark-mode .form-group select {
+            background-color: #333;
+            color: #f5f5f5;
+            border-color: #444;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #1a1a1a;
+            box-shadow: 0 0 0 3px rgba(26,26,26,0.1);
+        }
+
+        body.dark-mode .form-group input:focus,
+        body.dark-mode .form-group select:focus {
+            border-color: #f5f5f5;
+            box-shadow: 0 0 0 3px rgba(245,245,245,0.1);
+        }
+
+        .modal-footer {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+
+        .modal-footer button { flex: 1; padding: 12px 20px; }
+        .modal-footer .btn-danger { flex: 0 1 120px; }
+        .modal-footer .btn-success { flex: 1; }
+        .modal-footer .btn-success:disabled { background-color: #ccc; cursor: not-allowed; }
+
+        @media (max-width: 768px) {
+            .fighters-grid { grid-template-columns: 1fr; }
+            .button-group { grid-template-columns: repeat(2, 1fr); }
+            .modal-content { padding: 24px; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-top">
+            <h1>BD Judo Aguaí</h1>
+            <button class="theme-toggle" id="themeToggle" title="Alternar tema">🌙</button>
+        </div>
+        <div class="button-group">
+            <button class="btn-primary" onclick="importJSON()">📥 Importar</button>
+            <button class="btn-primary" onclick="exportJSON()">📤 JSON</button>
+            <button class="btn-primary" onclick="exportCSV()">📄 CSV</button>
+            <button class="btn-success" onclick="openModal('new')">➕ Lutador</button>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="stats" id="stats"></div>
+        <div class="fighters-grid" id="grid"></div>
+    </div>
+
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modal-title">Novo Lutador</h2>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Nome *</label>
+                    <input type="text" id="nome" placeholder="Digite o nome completo">
+                </div>
+                <div class="form-group">
+                    <label>Gênero *</label>
+                    <select id="genero">
+                        <option value="">Selecione o gênero</option>
+                        <option value="M">Masculino</option>
+                        <option value="F">Feminino</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>CPF *</label>
+                    <input type="text" id="cpf" placeholder="000.000.000-00" maxlength="14">
+                </div>
+                <div class="form-group">
+                    <label>RG</label>
+                    <input type="text" id="rg" placeholder="Deixe em branco se não tiver">
+                </div>
+                <div class="form-group">
+                    <label>Data de Nascimento *</label>
+                    <input type="date" id="dataNasc">
+                </div>
+                <div class="form-group">
+                    <label>Peso (kg) *</label>
+                    <input type="number" id="peso" placeholder="70" step="0.1">
+                </div>
+                <div class="form-group">
+                    <label>Faixa *</label>
+                    <select id="faixa">
+                        <option value="">Selecione uma faixa</option>
+                        <option value="Branca">Branca</option>
+                        <option value="Cinza">Cinza</option>
+                        <option value="Azul">Azul</option>
+                        <option value="Amarela">Amarela</option>
+                        <option value="Laranja">Laranja</option>
+                        <option value="Verde">Verde</option>
+                        <option value="Roxa">Roxa</option>
+                        <option value="Marrom">Marrom</option>
+                        <option value="Preta">Preta</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-danger" onclick="closeModal()">Cancelar</button>
+                <button class="btn-success" id="confirmBtn" onclick="saveFighter()">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const FAIXAS = [
+            { nome: 'Branca', cor: '#FFFFFF', textColor: '#000000' },
+            { nome: 'Cinza', cor: '#808080', textColor: '#FFFFFF' },
+            { nome: 'Azul', cor: '#4169E1', textColor: '#FFFFFF' },
+            { nome: 'Amarela', cor: '#FFD700', textColor: '#000000' },
+            { nome: 'Laranja', cor: '#FF8C00', textColor: '#FFFFFF' },
+            { nome: 'Verde', cor: '#228B22', textColor: '#FFFFFF' },
+            { nome: 'Roxa', cor: '#9932CC', textColor: '#FFFFFF' },
+            { nome: 'Marrom', cor: '#8B4513', textColor: '#FFFFFF' },
+            { nome: 'Preta', cor: '#000000', textColor: '#FFFFFF' }
+        ];
+
+        const TABELAS_ASPIRANTE = {
+            M: {
+                'Sub-09': [23, 28, 33, 38, 43, 48, 53, 58],
+                'Sub-11': [28, 33, 38, 43, 48, 53, 58, 63],
+                'Sub-13': [28, 33, 38, 43, 48, 53, 58, 63],
+                'Sub-15': [40, 46, 52, 60, 68, 76, 85],
+                'Cadete': [50, 56, 62, 69, 77, 85, 94]
+            },
+            F: {
+                'Sub-09': [23, 26, 29, 32, 35, 38, 41, 44],
+                'Sub-11': [28, 32, 36, 40, 44, 48, 52, 56],
+                'Sub-13': [36, 40, 44, 48, 52, 56, 60, 64],
+                'Sub-15': [40, 44, 48, 52, 56, 60, 66],
+                'Cadete': [40, 44, 48, 52, 56, 60, 66]
+            }
+        };
+
+        const TABELAS_ESPECIAL = {
+            M: [60, 66, 73, 81, 90, 100],
+            F: [48, 52, 57, 63, 70]
+        };
+
+        let fighters = [];
+        let editingId = null;
+
+        window.addEventListener('DOMContentLoaded', () => {
+            loadTheme();
+            loadFromStorage();
+            render();
+            setupValidation();
+            setupThemeToggle();
+        });
+
+        function setupThemeToggle() {
+            const toggle = document.getElementById('themeToggle');
+            toggle.addEventListener('click', toggleTheme);
+        }
+
+        function toggleTheme() {
+            const isDark = document.body.classList.toggle('dark-mode');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            updateThemeIcon();
+        }
+
+        function loadTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark-mode');
+            }
+            updateThemeIcon();
+        }
+
+        function updateThemeIcon() {
+            const toggle = document.getElementById('themeToggle');
+            const isDark = document.body.classList.contains('dark-mode');
+            toggle.textContent = isDark ? '☀️' : '🌙';
+        }
+
+        function formatarCPF(valor) {
+            return valor
+                .replace(/\D/g, '')
+                .replace(/(\d{3})(\d)/, '$1.$2')
+                .replace(/(\d{3})(\d)/, '$1.$2')
+                .replace(/(\d{3})(\d{1,2})$/, '$1-$2')
+                .slice(0, 14);
+        }
+
+        function formatarData(data) {
+            const [ano, mes, dia] = data.split('-');
+            return `${dia}/${mes}/${ano}`;
+        }
+
+        function calcularIdadeECategoria(dataNasc) {
+            const hoje = new Date();
+            const nasc = new Date(dataNasc);
+            let idade = hoje.getFullYear() - nasc.getFullYear();
+            const mes = hoje.getMonth() - nasc.getMonth();
+            if (mes < 0 || (mes === 0 && hoje.getDate() < nasc.getDate())) {
+                idade--;
+            }
+
+            let categoria = '';
+            if (idade < 9) categoria = 'Sub-09';
+            else if (idade < 11) categoria = 'Sub-11';
+            else if (idade < 13) categoria = 'Sub-13';
+            else if (idade < 15) categoria = 'Sub-15';
+            else if (idade < 18) categoria = 'Cadete';
+            else if (idade < 21) categoria = 'Júnior';
+            else if (idade < 30) categoria = 'Sênior';
+            else if (idade < 35) categoria = 'Master M1';
+            else if (idade < 40) categoria = 'Master M2';
+            else if (idade < 45) categoria = 'Master M3';
+            else if (idade < 50) categoria = 'Master M4';
+            else if (idade < 55) categoria = 'Master M5';
+            else if (idade < 60) categoria = 'Master M6';
+            else if (idade < 65) categoria = 'Master M7';
+            else if (idade < 70) categoria = 'Master M8';
+            else if (idade < 75) categoria = 'Master M9';
+            else categoria = 'Master M10';
+
+            if (categoria.includes('Master')) {
+                categoria = categoria.replace('Master M', 'Master F');
+            }
+
+            return { idade, categoria };
+        }
+
+        function calcularCategoriaPeso(genero, categoriaIdade, peso) {
+            let tabela = null;
+
+            if (TABELAS_ASPIRANTE[genero] && TABELAS_ASPIRANTE[genero][categoriaIdade]) {
+                tabela = TABELAS_ASPIRANTE[genero][categoriaIdade];
+            } else {
+                tabela = TABELAS_ESPECIAL[genero];
+            }
+
+            if (!tabela) return '';
+
+            for (let i = 0; i < tabela.length; i++) {
+                if (peso <= tabela[i]) {
+                    return `-${tabela[i]}`;
+                }
+            }
+
+            return `+${tabela[tabela.length - 1]}`;
+        }
+
+        function loadFromStorage() {
+            const saved = localStorage.getItem('bd_judo_fighters');
+            if (saved) fighters = JSON.parse(saved);
+        }
+
+        function saveToStorage() {
+            localStorage.setItem('bd_judo_fighters', JSON.stringify(fighters));
+        }
+
+        function setupValidation() {
+            document.getElementById('cpf').addEventListener('input', (e) => {
+                e.target.value = formatarCPF(e.target.value);
+                validateForm();
+            });
+
+            const inputs = ['nome', 'genero', 'dataNasc', 'peso', 'faixa'];
+            inputs.forEach(id => {
+                document.getElementById(id).addEventListener('input', validateForm);
+                document.getElementById(id).addEventListener('change', validateForm);
+            });
+        }
+
+        function validateForm() {
+            const nome = document.getElementById('nome').value.trim();
+            const genero = document.getElementById('genero').value.trim();
+            const cpf = document.getElementById('cpf').value.trim();
+            const dataNasc = document.getElementById('dataNasc').value;
+            const peso = document.getElementById('peso').value;
+            const faixa = document.getElementById('faixa').value;
+
+            const isValid = nome && genero && cpf.length === 14 && dataNasc && peso && faixa;
+            document.getElementById('confirmBtn').disabled = !isValid;
+        }
+
+        function validarCPF(cpf) {
+            cpf = cpf.replace(/\D/g, '');
+            if (cpf.length !== 11) return false;
+            
+            let soma = 0;
+            for (let i = 0; i < 9; i++) soma += parseInt(cpf[i]) * (10 - i);
+            let resto = soma % 11;
+            let digito1 = resto < 2 ? 0 : 11 - resto;
+
+            soma = 0;
+            for (let i = 0; i < 10; i++) soma += parseInt(cpf[i]) * (11 - i);
+            resto = soma % 11;
+            let digito2 = resto < 2 ? 0 : 11 - resto;
+
+            return cpf[9] === String(digito1) && cpf[10] === String(digito2);
+        }
+
+        function openModal(type, id = null) {
+            editingId = type === 'edit' ? id : null;
+            document.getElementById('modal-title').textContent = type === 'new' ? 'Novo Lutador' : 'Editar Lutador';
+
+            document.getElementById('nome').value = '';
+            document.getElementById('genero').value = '';
+            document.getElementById('cpf').value = '';
+            document.getElementById('rg').value = '';
+            document.getElementById('dataNasc').value = '';
+            document.getElementById('peso').value = '';
+            document.getElementById('faixa').value = '';
+
+            if (type === 'edit' && id !== null) {
+                const fighter = fighters.find(f => f.id === id);
+                if (fighter) {
+                    document.getElementById('nome').value = fighter.nome;
+                    document.getElementById('genero').value = fighter.genero;
+                    document.getElementById('cpf').value = fighter.cpf;
+                    document.getElementById('rg').value = fighter.rg || '';
+                    document.getElementById('dataNasc').value = fighter.dataNasc;
+                    document.getElementById('peso').value = fighter.peso;
+                    document.getElementById('faixa').value = fighter.faixa;
+                }
+            }
+
+            validateForm();
+            document.getElementById('modal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.remove('active');
+            editingId = null;
+        }
+
+        function saveFighter() {
+            const nome = document.getElementById('nome').value.trim();
+            const genero = document.getElementById('genero').value.trim();
+            const cpf = document.getElementById('cpf').value.trim();
+            const rg = document.getElementById('rg').value.trim();
+            const dataNasc = document.getElementById('dataNasc').value;
+            const peso = document.getElementById('peso').value;
+            const faixa = document.getElementById('faixa').value;
+
+            if (!nome || !genero || !cpf || !dataNasc || !peso || !faixa) {
+                alert('Preencha todos os campos obrigatórios!');
+                return;
+            }
+
+            if (!validarCPF(cpf)) {
+                alert('CPF inválido!');
+                return;
+            }
+
+            const cpfLimpo = cpf.replace(/\D/g, '');
+            const cpfDuplicate = fighters.some(f => 
+                f.cpf.replace(/\D/g, '') === cpfLimpo && f.id !== editingId
+            );
+
+            if (cpfDuplicate) {
+                alert('CPF já cadastrado!');
+                return;
+            }
+
+            if (editingId) {
+                const index = fighters.findIndex(f => f.id === editingId);
+                fighters[index] = {
+                    id: editingId,
+                    nome,
+                    genero,
+                    cpf,
+                    rg,
+                    dataNasc,
+                    peso,
+                    faixa
+                };
+            } else {
+                fighters.push({
+                    id: Date.now(),
+                    nome,
+                    genero,
+                    cpf,
+                    rg,
+                    dataNasc,
+                    peso,
+                    faixa
+                });
+            }
+
+            saveToStorage();
+            render();
+            closeModal();
+        }
+
+        function deleteFighter(id) {
+            if (confirm('Tem certeza que deseja deletar este lutador?')) {
+                fighters = fighters.filter(f => f.id !== id);
+                saveToStorage();
+                render();
+            }
+        }
+
+        function render() {
+            renderStats();
+            renderGrid();
+        }
+
+        function renderStats() {
+            const total = fighters.length;
+            document.getElementById('stats').innerHTML = `
+                <div class="stat-card">
+                    <div class="number">${total}</div>
+                    <div class="label">Lutadores</div>
+                </div>
+            `;
+        }
+
+        function renderGrid() {
+            const grid = document.getElementById('grid');
+
+            if (fighters.length === 0) {
+                grid.innerHTML = `
+                    <div class="empty-state">
+                        <h2>Nenhum lutador cadastrado</h2>
+                        <p>Clique em "+Lutador" para começar</p>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = fighters.map(f => {
+                const faixaData = FAIXAS.find(x => x.nome === f.faixa) || FAIXAS[0];
+                const { idade, categoria } = calcularIdadeECategoria(f.dataNasc);
+                const categoriaPeso = calcularCategoriaPeso(f.genero, categoria, parseFloat(f.peso));
+                const categoriaCompleta = categoriaPeso ? `${categoria} (${categoriaPeso})` : categoria;
+                const rgDisplay = f.rg || 'N/A';
+                const generoDisplay = f.genero === 'M' ? 'Masculino' : 'Feminino';
+                const dataFormatada = formatarData(f.dataNasc);
+
+                return `
+                    <div class="card" style="border-left-color: ${faixaData.cor};" onclick="openModal('edit', ${f.id})">
+                        <div class="card-header">
+                            <h3>${f.nome}</h3>
+                            <span class="faixa-badge" style="background-color: ${faixaData.cor}; color: ${faixaData.textColor};">
+                                ${f.faixa}
+                            </span>
+                        </div>
+                        <div class="card-body">
+                            <div class="info-row">
+                                <span class="info-label">CPF:</span>
+                                <span class="info-value">${f.cpf}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">RG:</span>
+                                <span class="info-value">${rgDisplay}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Gênero:</span>
+                                <span class="info-value">${generoDisplay}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Data Nasc:</span>
+                                <span class="info-value">${dataFormatada}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Categoria:</span>
+                                <span class="info-value">${categoriaCompleta}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Peso:</span>
+                                <span class="info-value">${f.peso} kg</span>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <div></div>
+                            <button class="delete-btn" onclick="event.stopPropagation(); deleteFighter(${f.id})">🗑️</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function importJSON() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            input.onchange = (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    try {
+                        const data = JSON.parse(ev.target.result);
+                        fighters = data.fighters || [];
+                        saveToStorage();
+                        render();
+                        alert('Importado com sucesso!');
+                    } catch (err) {
+                        alert('Erro ao importar: ' + err.message);
+                    }
+                };
+                reader.readAsText(file);
+            };
+            input.click();
+        }
+
+        function exportJSON() {
+            if (fighters.length === 0) {
+                alert('Nenhum lutador para exportar!');
+                return;
+            }
+
+            const data = { fighters };
+            const json = JSON.stringify(data, null, 2);
+            const blob = new Blob([json], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'bd-judo-aguai.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function exportCSV() {
+            if (fighters.length === 0) {
+                alert('Nenhum lutador para exportar!');
+                return;
+            }
+
+            let csv = 'Nome,Gênero,CPF,RG,Data de Nascimento,Peso (kg),Faixa,Categoria Completa\n';
+            
+            fighters.forEach(f => {
+                const { idade, categoria } = calcularIdadeECategoria(f.dataNasc);
+                const categoriaPeso = calcularCategoriaPeso(f.genero, categoria, parseFloat(f.peso));
+                const categoriaCompleta = categoriaPeso ? `${categoria} (${categoriaPeso})` : categoria;
+                const rg = f.rg || 'N/A';
+                const generoDisplay = f.genero === 'M' ? 'Masculino' : 'Feminino';
+                csv += `"${f.nome}","${generoDisplay}","${f.cpf}","${rg}","${f.dataNasc}","${f.peso}","${f.faixa}","${categoriaCompleta}"\n`;
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+            if (isMobile && navigator.share) {
+                navigator.share({
+                    files: [new File([blob], 'bd-judo-aguai.csv', { type: 'text/csv' })]
+                }).catch(err => console.log(err));
+            } else {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'bd-judo-aguai.csv';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }
+        }
+    </script>
+</body>
+</html>
