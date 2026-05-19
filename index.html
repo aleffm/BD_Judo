@@ -428,6 +428,9 @@
     </div>
 
     <script>
+		if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(err => console.log('SW erro:', err));
+        }
         const FAIXAS = [
             { nome: 'Branca', cor: '#FFFFFF', textColor: '#000000' },
             { nome: 'Cinza', cor: '#808080', textColor: '#FFFFFF' },
