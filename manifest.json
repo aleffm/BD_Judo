@@ -1,0 +1,23 @@
+{
+  "short_name": "BD Judo Aguaí",
+  "name": "App para Banco de dados de judocas",
+  "icons": [
+    {
+      "src": "icon.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any"
+    },
+    {
+      "src": "icon.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any"
+    }
+  ],
+  "start_url": "./index.html",
+  "background_color": "#f4f4f4",
+  "display": "standalone",
+  "theme_color": "#007bff",
+  "orientation": "portrait"
+}
