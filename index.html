@@ -361,7 +361,7 @@
             <button class="btn-primary" onclick="importJSON()">📥 Importar</button>
             <button class="btn-primary" onclick="exportJSON()">📤 JSON</button>
             <button class="btn-primary" onclick="exportCSV()">📄 CSV</button>
-            <button class="btn-success" onclick="openModal('new')">➕ Atleta</button>
+            <button class="btn-success" onclick="openModal('new')">➕ Lutador</button>
         </div>
     </header>
 
@@ -373,7 +373,7 @@
     <div class="modal" id="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 id="modal-title">Novo Atleta</h2>
+                <h2 id="modal-title">Novo Lutador</h2>
             </div>
             <div class="modal-body">
                 <div class="form-group">
@@ -428,9 +428,6 @@
     </div>
 
     <script>
-		if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js').catch(err => console.log('SW erro:', err));
-        }
         const FAIXAS = [
             { nome: 'Branca', cor: '#FFFFFF', textColor: '#000000' },
             { nome: 'Cinza', cor: '#808080', textColor: '#FFFFFF' },
@@ -576,6 +573,8 @@
         }
 
         function saveToStorage() {
+            // Ordena alfabeticamente por nome antes de salvar
+            fighters.sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR'));
             localStorage.setItem('bd_judo_fighters', JSON.stringify(fighters));
         }
 
@@ -623,7 +622,7 @@
 
         function openModal(type, id = null) {
             editingId = type === 'edit' ? id : null;
-            document.getElementById('modal-title').textContent = type === 'new' ? 'Novo Atleta' : 'Editar Atleta';
+            document.getElementById('modal-title').textContent = type === 'new' ? 'Novo Lutador' : 'Editar Lutador';
 
             document.getElementById('nome').value = '';
             document.getElementById('genero').value = '';
@@ -715,7 +714,7 @@
         }
 
         function deleteFighter(id) {
-            if (confirm('Tem certeza que deseja deletar este atleta?')) {
+            if (confirm('Tem certeza que deseja deletar este lutador?')) {
                 fighters = fighters.filter(f => f.id !== id);
                 saveToStorage();
                 render();
@@ -732,7 +731,7 @@
             document.getElementById('stats').innerHTML = `
                 <div class="stat-card">
                     <div class="number">${total}</div>
-                    <div class="label">Atletas</div>
+                    <div class="label">Lutadores</div>
                 </div>
             `;
         }
@@ -743,14 +742,19 @@
             if (fighters.length === 0) {
                 grid.innerHTML = `
                     <div class="empty-state">
-                        <h2>Nenhum Atleta cadastrado</h2>
-                        <p>Clique em "+Atleta" para começar</p>
+                        <h2>Nenhum lutador cadastrado</h2>
+                        <p>Clique em "+Lutador" para começar</p>
                     </div>
                 `;
                 return;
             }
 
-            grid.innerHTML = fighters.map(f => {
+            // Ordena alfabeticamente para exibição
+            const fightetersSorted = [...fighters].sort((a, b) => 
+                a.nome.localeCompare(b.nome, 'pt-BR')
+            );
+
+            grid.innerHTML = fightetersSorted.map(f => {
                 const faixaData = FAIXAS.find(x => x.nome === f.faixa) || FAIXAS[0];
                 const { idade, categoria } = calcularIdadeECategoria(f.dataNasc);
                 const categoriaPeso = calcularCategoriaPeso(f.genero, categoria, parseFloat(f.peso));
@@ -829,7 +833,7 @@
 
         function exportJSON() {
             if (fighters.length === 0) {
-                alert('Nenhum atleta para exportar!');
+                alert('Nenhum lutador para exportar!');
                 return;
             }
 
@@ -848,7 +852,7 @@
 
         function exportCSV() {
             if (fighters.length === 0) {
-                alert('Nenhum atleta para exportar!');
+                alert('Nenhum lutador para exportar!');
                 return;
             }
 
