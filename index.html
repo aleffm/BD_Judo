@@ -407,17 +407,21 @@
                 <div class="form-group">
                     <label>Faixa *</label>
                     <select id="faixa">
-                        <option value="">Selecione uma faixa</option>
-                        <option value="Branca">Branca</option>
-                        <option value="Cinza">Cinza</option>
-                        <option value="Azul">Azul</option>
-                        <option value="Amarela">Amarela</option>
-                        <option value="Laranja">Laranja</option>
-                        <option value="Verde">Verde</option>
-                        <option value="Roxa">Roxa</option>
-                        <option value="Marrom">Marrom</option>
-                        <option value="Preta">Preta</option>
-                    </select>
+					    <option value="">Selecione uma faixa</option>
+					    <option value="Branca">Branca</option>
+					    <option value="Branca p/ Cinza">Branca p/ Cinza</option>
+					    <option value="Cinza">Cinza</option>
+					    <option value="Cinza p/ Azul">Cinza p/ Azul</option>
+					    <option value="Azul">Azul</option>
+					    <option value="Azul p/ Amarela">Azul p/ Amarela</option>
+					    <option value="Amarela">Amarela</option>
+					    <option value="Amarela p/ Laranja">Amarela p/ Laranja</option>
+					    <option value="Laranja">Laranja</option>
+					    <option value="Verde">Verde</option>
+					    <option value="Roxa">Roxa</option>
+					    <option value="Marrom">Marrom</option>
+					    <option value="Preta">Preta</option>
+					</select>
                 </div>
             </div>
             <div class="modal-footer">
@@ -429,16 +433,20 @@
 
     <script>
         const FAIXAS = [
-            { nome: 'Branca', cor: '#FFFFFF', textColor: '#000000' },
-            { nome: 'Cinza', cor: '#808080', textColor: '#FFFFFF' },
-            { nome: 'Azul', cor: '#4169E1', textColor: '#FFFFFF' },
-            { nome: 'Amarela', cor: '#FFD700', textColor: '#000000' },
-            { nome: 'Laranja', cor: '#FF8C00', textColor: '#FFFFFF' },
-            { nome: 'Verde', cor: '#228B22', textColor: '#FFFFFF' },
-            { nome: 'Roxa', cor: '#9932CC', textColor: '#FFFFFF' },
-            { nome: 'Marrom', cor: '#8B4513', textColor: '#FFFFFF' },
-            { nome: 'Preta', cor: '#000000', textColor: '#FFFFFF' }
-        ];
+		    { nome: 'Branca', cor: '#FFFFFF', textColor: '#000000' },
+		    { nome: 'Branca p/ Cinza', cor: '#D3D3D3', textColor: '#000000' },
+		    { nome: 'Cinza', cor: '#808080', textColor: '#FFFFFF' },
+		    { nome: 'Cinza p/ Azul', cor: '#6B7FA8', textColor: '#FFFFFF' },
+		    { nome: 'Azul', cor: '#4169E1', textColor: '#FFFFFF' },
+		    { nome: 'Azul p/ Amarela', cor: '#9B8C3D', textColor: '#FFFFFF' },
+		    { nome: 'Amarela', cor: '#FFD700', textColor: '#000000' },
+		    { nome: 'Amarela p/ Laranja', cor: '#FFA500', textColor: '#000000' },
+		    { nome: 'Laranja', cor: '#FF8C00', textColor: '#FFFFFF' },
+		    { nome: 'Verde', cor: '#228B22', textColor: '#FFFFFF' },
+		    { nome: 'Roxa', cor: '#9932CC', textColor: '#FFFFFF' },
+		    { nome: 'Marrom', cor: '#8B4513', textColor: '#FFFFFF' },
+		    { nome: 'Preta', cor: '#000000', textColor: '#FFFFFF' }
+		];
 
         const TABELAS_ASPIRANTE = {
             M: {
