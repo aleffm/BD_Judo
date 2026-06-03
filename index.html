@@ -745,74 +745,97 @@
         }
 
         function renderGrid() {
-            const grid = document.getElementById('grid');
-
-            if (fighters.length === 0) {
-                grid.innerHTML = `
-                    <div class="empty-state">
-                        <h2>Nenhum lutador cadastrado</h2>
-                        <p>Clique em "+Lutador" para começar</p>
-                    </div>
-                `;
-                return;
-            }
-
-            // Ordena alfabeticamente para exibição
-            const fightetersSorted = [...fighters].sort((a, b) => 
-                a.nome.localeCompare(b.nome, 'pt-BR')
-            );
-
-            grid.innerHTML = fightetersSorted.map(f => {
-                const faixaData = FAIXAS.find(x => x.nome === f.faixa) || FAIXAS[0];
-                const { idade, categoria } = calcularIdadeECategoria(f.dataNasc);
-                const categoriaPeso = calcularCategoriaPeso(f.genero, categoria, parseFloat(f.peso));
-                const categoriaCompleta = categoriaPeso ? `${categoria} (${categoriaPeso})` : categoria;
-                const rgDisplay = f.rg || 'N/A';
-                const generoDisplay = f.genero === 'M' ? 'Masculino' : 'Feminino';
-                const dataFormatada = formatarData(f.dataNasc);
-
-                return `
-                    <div class="card" style="border-left-color: ${faixaData.cor};" onclick="openModal('edit', ${f.id})">
-                        <div class="card-header">
-                            <h3>${f.nome}</h3>
-                            <span class="faixa-badge" style="background-color: ${faixaData.cor}; color: ${faixaData.textColor};">
-                                ${f.faixa}
-                            </span>
-                        </div>
-                        <div class="card-body">
-                            <div class="info-row">
-                                <span class="info-label">CPF:</span>
-                                <span class="info-value">${f.cpf}</span>
-                            </div>
-                            <div class="info-row">
-                                <span class="info-label">RG:</span>
-                                <span class="info-value">${rgDisplay}</span>
-                            </div>
-                            <div class="info-row">
-                                <span class="info-label">Gênero:</span>
-                                <span class="info-value">${generoDisplay}</span>
-                            </div>
-                            <div class="info-row">
-                                <span class="info-label">Data Nasc:</span>
-                                <span class="info-value">${dataFormatada}</span>
-                            </div>
-                            <div class="info-row">
-                                <span class="info-label">Categoria:</span>
-                                <span class="info-value">${categoriaCompleta}</span>
-                            </div>
-                            <div class="info-row">
-                                <span class="info-label">Peso:</span>
-                                <span class="info-value">${f.peso} kg</span>
-                            </div>
-                        </div>
-                        <div class="card-footer">
-                            <div></div>
-                            <button class="delete-btn" onclick="event.stopPropagation(); deleteFighter(${f.id})">🗑️</button>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
+		    const grid = document.getElementById('grid');
+		
+		    if (fighters.length === 0) {
+		        grid.innerHTML = `
+		            <div class="empty-state">
+		                <h2>Nenhum lutador cadastrado</h2>
+		                <p>Clique em "+Lutador" para começar</p>
+		            </div>
+		        `;
+		        return;
+		    }
+		
+		    const fightetersSorted = [...fighters].sort((a, b) => 
+		        a.nome.localeCompare(b.nome, 'pt-BR')
+		    );
+		
+		    grid.innerHTML = fightetersSorted.map(f => {
+		        const faixaData = FAIXAS.find(x => x.nome === f.faixa) || FAIXAS[0];
+		        const { idade, categoria } = calcularIdadeECategoria(f.dataNasc);
+		        const categoriaPeso = calcularCategoriaPeso(f.genero, categoria, parseFloat(f.peso));
+		        const categoriaCompleta = categoriaPeso ? `${categoria} (${categoriaPeso})` : categoria;
+		        const rgDisplay = f.rg || 'N/A';
+		        const generoDisplay = f.genero === 'M' ? 'Masculino' : 'Feminino';
+		        const dataFormatada = formatarData(f.dataNasc);
+		
+		        // Determinar se é faixa intermediária e criar gradiente
+		        let borderStyle = `border-left-color: ${faixaData.cor};`;
+		        
+		        if (f.faixa.includes('p/')) {
+		            // É uma faixa intermediária - criar gradiente
+		            const partes = f.faixa.split(' p/ ');
+		            const faixaAnterior = FAIXAS.find(x => x.nome === partes[0]);
+		            const faixaProxima = FAIXAS.find(x => x.nome === partes[1]);
+		            
+		            if (faixaAnterior && faixaProxima) {
+		                const cor1 = faixaAnterior.cor;
+		                const cor2 = faixaProxima.cor;
+		                borderStyle = `background: linear-gradient(to right, ${cor1} 0%, ${cor1} 66.66%, ${cor2} 66.66%, ${cor2} 100%); border-left: none;`;
+		            }
+		        }
+		
+		        return `
+		            <div class="card" style="${borderStyle}">
+		                <div class="card-header">
+		                    <h3>${f.nome}</h3>
+		                    <span class="faixa-badge" style="background-color: ${faixaData.cor}; color: ${faixaData.textColor};">
+		                        ${f.faixa}
+		                    </span>
+		                </div>
+		                <div class="card-body">
+		                    <div class="info-row">
+		                        <span class="info-label">CPF:</span>
+		                        <span class="info-value">${f.cpf}</span>
+		                    </div>
+		                    <div class="info-row">
+		                        <span class="info-label">RG:</span>
+		                        <span class="info-value">${rgDisplay}</span>
+		                    </div>
+		                    <div class="info-row">
+		                        <span class="info-label">Gênero:</span>
+		                        <span class="info-value">${generoDisplay}</span>
+		                    </div>
+		                    <div class="info-row">
+		                        <span class="info-label">Data Nasc:</span>
+		                        <span class="info-value">${dataFormatada}</span>
+		                    </div>
+		                    <div class="info-row">
+		                        <span class="info-label">Categoria:</span>
+		                        <span class="info-value">${categoriaCompleta}</span>
+		                    </div>
+		                    <div class="info-row">
+		                        <span class="info-label">Peso:</span>
+		                        <span class="info-value">${f.peso} kg</span>
+		                    </div>
+		                    <div class="info-row">
+		                        <span class="info-label">Altura:</span>
+		                        <span class="info-value">${f.altura ? f.altura + ' m' : 'N/A'}</span>
+		                    </div>
+		                    <div class="info-row">
+		                        <span class="info-label">Kimono:</span>
+		                        <span class="info-value">${f.kimono || 'N/A'}</span>
+		                    </div>
+		                </div>
+		                <div class="card-footer">
+		                    <div></div>
+		                    <button class="delete-btn" onclick="event.stopPropagation(); deleteFighter(${f.id})">🗑️</button>
+		                </div>
+		            </div>
+		        `;
+		    }).join('');
+		}
 
         function importJSON() {
             const input = document.createElement('input');
