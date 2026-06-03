@@ -746,7 +746,6 @@
 
         function renderGrid() {
 		    const grid = document.getElementById('grid');
-		
 		    if (fighters.length === 0) {
 		        grid.innerHTML = `
 		            <div class="empty-state">
@@ -756,11 +755,9 @@
 		        `;
 		        return;
 		    }
-		
 		    const fightetersSorted = [...fighters].sort((a, b) => 
 		        a.nome.localeCompare(b.nome, 'pt-BR')
 		    );
-		
 		    grid.innerHTML = fightetersSorted.map(f => {
 		        const faixaData = FAIXAS.find(x => x.nome === f.faixa) || FAIXAS[0];
 		        const { idade, categoria } = calcularIdadeECategoria(f.dataNasc);
@@ -772,7 +769,9 @@
 		
 		        // Determinar se é faixa intermediária e criar gradiente
 		        let borderStyle = `border-left-color: ${faixaData.cor};`;
-		        
+		        let badgeColor = faixaData.cor;
+		        let badgeTextColor = faixaData.textColor;
+		
 		        if (f.faixa.includes('p/')) {
 		            // É uma faixa intermediária - criar gradiente
 		            const partes = f.faixa.split(' p/ ');
@@ -783,6 +782,10 @@
 		                const cor1 = faixaAnterior.cor;
 		                const cor2 = faixaProxima.cor;
 		                borderStyle = `background: linear-gradient(to right, ${cor1} 0%, ${cor1} 66.66%, ${cor2} 66.66%, ${cor2} 100%); border-left: none;`;
+		                
+		                // Badge usa a cor da faixa anterior (2/3)
+		                badgeColor = cor1;
+		                badgeTextColor = faixaAnterior.textColor;
 		            }
 		        }
 		
@@ -790,7 +793,7 @@
 		            <div class="card" style="${borderStyle}">
 		                <div class="card-header">
 		                    <h3>${f.nome}</h3>
-		                    <span class="faixa-badge" style="background-color: ${faixaData.cor}; color: ${faixaData.textColor};">
+		                    <span class="faixa-badge" style="background-color: ${badgeColor}; color: ${badgeTextColor};">
 		                        ${f.faixa}
 		                    </span>
 		                </div>
