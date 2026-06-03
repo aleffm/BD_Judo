@@ -136,15 +136,40 @@
         }
 
         .card {
-            background: #fff;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-            transition: all 0.3s ease;
-            cursor: pointer;
-            position: relative;
-            border-left: 6px solid #1a1a1a;
-        }
+			background: #fff;
+			border-radius: 8px;
+			overflow: hidden;
+			box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+			transition: all 0.3s ease;
+			cursor: pointer;
+			position: relative;
+			border-left: 6px solid #1a1a1a;
+			pointer-events: auto;
+		}
+
+		.card * {
+			pointer-events: auto;
+		}
+
+		.delete-btn {
+			pointer-events: auto;
+		}
+		
+		.card.faixa-intermediaria::before {
+			content: '';
+			position: absolute;
+			left: 0;
+			top: 0;
+			width: 6px;
+			height: 100%;
+			background: var(--gradient-faixa);
+			border-radius: 8px 0 0 8px;
+		}
+
+		.card.faixa-intermediaria {
+			border-left: none;
+		}
+
 
         body.dark-mode .card {
             background: #2a2a2a;
@@ -423,6 +448,30 @@
 					    <option value="Preta">Preta</option>
 					</select>
                 </div>
+				<div class="form-group">
+					<label>Altura (m)</label>
+					<input type="number" id="altura" placeholder="1.70" step="0.01" oninput="sugerirKimono()">
+				</div>
+
+				<div class="form-group">
+					<label>Tamanho Kimono</label>
+					<select id="kimono">
+						<option value="">Selecione (opcional)</option>
+						<option value="M000">M000</option>
+						<option value="M00">M00</option>
+						<option value="M0">M0</option>
+						<option value="M1">M1</option>
+						<option value="M2">M2</option>
+						<option value="M3">M3</option>
+						<option value="M4">M4</option>
+						<option value="1,50">1,50</option>
+						<option value="1,60">1,60</option>
+						<option value="1,70">1,70</option>
+						<option value="1,80">1,80</option>
+						<option value="1,90">1,90</option>
+						<option value="2,00+">2,00+</option>
+					</select>
+				</div>
             </div>
             <div class="modal-footer">
                 <button class="btn-danger" onclick="closeModal()">Cancelar</button>
@@ -585,6 +634,27 @@
             fighters.sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR'));
             localStorage.setItem('bd_judo_fighters', JSON.stringify(fighters));
         }
+		
+		function sugerirKimono() {
+			const altura = parseFloat(document.getElementById('altura').value);
+			const kimonoSelect = document.getElementById('kimono');
+			
+			if (!altura) return;
+			
+			if (altura <= 1.00) kimonoSelect.value = 'M000';
+			else if (altura <= 1.10) kimonoSelect.value = 'M00';
+			else if (altura <= 1.20) kimonoSelect.value = 'M0';
+			else if (altura <= 1.30) kimonoSelect.value = 'M1';
+			else if (altura <= 1.40) kimonoSelect.value = 'M2';
+			else if (altura <= 1.50) kimonoSelect.value = 'M3';
+			else if (altura <= 1.60) kimonoSelect.value = 'M4';
+			else if (altura <= 1.70) kimonoSelect.value = '1,50';
+			else if (altura <= 1.80) kimonoSelect.value = '1,60';
+			else if (altura <= 1.90) kimonoSelect.value = '1,70';
+			else if (altura <= 2.00) kimonoSelect.value = '1,80';
+			else if (altura <= 2.10) kimonoSelect.value = '1,90';
+			else kimonoSelect.value = '2,00+';
+		}
 
         function setupValidation() {
             document.getElementById('cpf').addEventListener('input', (e) => {
@@ -628,34 +698,38 @@
             return cpf[9] === String(digito1) && cpf[10] === String(digito2);
         }
 
-        function openModal(type, id = null) {
-            editingId = type === 'edit' ? id : null;
-            document.getElementById('modal-title').textContent = type === 'new' ? 'Novo Lutador' : 'Editar Lutador';
+		function openModal(type, id = null) {
+			editingId = type === 'edit' ? id : null;
+			document.getElementById('modal-title').textContent = type === 'new' ? 'Novo Lutador' : 'Editar Lutador';
 
-            document.getElementById('nome').value = '';
-            document.getElementById('genero').value = '';
-            document.getElementById('cpf').value = '';
-            document.getElementById('rg').value = '';
-            document.getElementById('dataNasc').value = '';
-            document.getElementById('peso').value = '';
-            document.getElementById('faixa').value = '';
+			document.getElementById('nome').value = '';
+			document.getElementById('genero').value = '';
+			document.getElementById('cpf').value = '';
+			document.getElementById('rg').value = '';
+			document.getElementById('dataNasc').value = '';
+			document.getElementById('peso').value = '';
+			document.getElementById('faixa').value = '';
+			document.getElementById('altura').value = '';  // NOVO
+			document.getElementById('kimono').value = '';  // NOVO
 
-            if (type === 'edit' && id !== null) {
-                const fighter = fighters.find(f => f.id === id);
-                if (fighter) {
-                    document.getElementById('nome').value = fighter.nome;
-                    document.getElementById('genero').value = fighter.genero;
-                    document.getElementById('cpf').value = fighter.cpf;
-                    document.getElementById('rg').value = fighter.rg || '';
-                    document.getElementById('dataNasc').value = fighter.dataNasc;
-                    document.getElementById('peso').value = fighter.peso;
-                    document.getElementById('faixa').value = fighter.faixa;
-                }
-            }
+			if (type === 'edit' && id !== null) {
+				const fighter = fighters.find(f => f.id === id);
+				if (fighter) {
+					document.getElementById('nome').value = fighter.nome;
+					document.getElementById('genero').value = fighter.genero;
+					document.getElementById('cpf').value = fighter.cpf;
+					document.getElementById('rg').value = fighter.rg || '';
+					document.getElementById('dataNasc').value = fighter.dataNasc;
+					document.getElementById('peso').value = fighter.peso;
+					document.getElementById('faixa').value = fighter.faixa;
+					document.getElementById('altura').value = fighter.altura || '';  // NOVO
+					document.getElementById('kimono').value = fighter.kimono || '';  // NOVO
+				}
+			}
 
-            validateForm();
-            document.getElementById('modal').classList.add('active');
-        }
+			validateForm();
+			document.getElementById('modal').classList.add('active');
+		}
 
         function closeModal() {
             document.getElementById('modal').classList.remove('active');
@@ -663,63 +737,69 @@
         }
 
         function saveFighter() {
-            const nome = document.getElementById('nome').value.trim();
-            const genero = document.getElementById('genero').value.trim();
-            const cpf = document.getElementById('cpf').value.trim();
-            const rg = document.getElementById('rg').value.trim();
-            const dataNasc = document.getElementById('dataNasc').value;
-            const peso = document.getElementById('peso').value;
-            const faixa = document.getElementById('faixa').value;
+			const nome = document.getElementById('nome').value.trim();
+			const genero = document.getElementById('genero').value.trim();
+			const cpf = document.getElementById('cpf').value.trim();
+			const rg = document.getElementById('rg').value.trim();
+			const dataNasc = document.getElementById('dataNasc').value;
+			const peso = document.getElementById('peso').value;
+			const faixa = document.getElementById('faixa').value;
+			const altura = document.getElementById('altura').value;  // NOVO
+			const kimono = document.getElementById('kimono').value;  // NOVO
 
-            if (!nome || !genero || !cpf || !dataNasc || !peso || !faixa) {
-                alert('Preencha todos os campos obrigatórios!');
-                return;
-            }
+			if (!nome || !genero || !cpf || !dataNasc || !peso || !faixa) {
+				alert('Preencha todos os campos obrigatórios!');
+				return;
+			}
 
-            if (!validarCPF(cpf)) {
-                alert('CPF inválido!');
-                return;
-            }
+			if (!validarCPF(cpf)) {
+				alert('CPF inválido!');
+				return;
+			}
 
-            const cpfLimpo = cpf.replace(/\D/g, '');
-            const cpfDuplicate = fighters.some(f => 
-                f.cpf.replace(/\D/g, '') === cpfLimpo && f.id !== editingId
-            );
+			const cpfLimpo = cpf.replace(/\D/g, '');
+			const cpfDuplicate = fighters.some(f => 
+				f.cpf.replace(/\D/g, '') === cpfLimpo && f.id !== editingId
+			);
 
-            if (cpfDuplicate) {
-                alert('CPF já cadastrado!');
-                return;
-            }
+			if (cpfDuplicate) {
+				alert('CPF já cadastrado!');
+				return;
+			}
 
-            if (editingId) {
-                const index = fighters.findIndex(f => f.id === editingId);
-                fighters[index] = {
-                    id: editingId,
-                    nome,
-                    genero,
-                    cpf,
-                    rg,
-                    dataNasc,
-                    peso,
-                    faixa
-                };
-            } else {
-                fighters.push({
-                    id: Date.now(),
-                    nome,
-                    genero,
-                    cpf,
-                    rg,
-                    dataNasc,
-                    peso,
-                    faixa
-                });
-            }
+			if (editingId) {
+				const index = fighters.findIndex(f => f.id === editingId);
+				fighters[index] = {
+					id: editingId,
+					nome,
+					genero,
+					cpf,
+					rg,
+					dataNasc,
+					peso,
+					faixa,
+					altura,  // NOVO
+					kimono   // NOVO
+				};
+			} else {
+				fighters.push({
+					id: Date.now(),
+					nome,
+					genero,
+					cpf,
+					rg,
+					dataNasc,
+					peso,
+					faixa,
+					altura,  // NOVO
+					kimono   // NOVO
+				});
+			}
 
-            saveToStorage();
-            render();
-            closeModal();
-        }
+			saveToStorage();
+			render();
+			closeModal();
+		}
 
         function deleteFighter(id) {
             if (confirm('Tem certeza que deseja deletar este lutador?')) {
@@ -745,100 +825,100 @@
         }
 
 		function renderGrid() {
-		    const grid = document.getElementById('grid');
-		    if (fighters.length === 0) {
-		        grid.innerHTML = `
-		            <div class="empty-state">
-		                <h2>Nenhum lutador cadastrado</h2>
-		                <p>Clique em "+Lutador" para começar</p>
-		            </div>
-		        `;
-		        return;
-		    }
-		    const fightetersSorted = [...fighters].sort((a, b) => 
-		        a.nome.localeCompare(b.nome, 'pt-BR')
-		    );
-		    grid.innerHTML = fightetersSorted.map(f => {
-		        const faixaData = FAIXAS.find(x => x.nome === f.faixa) || FAIXAS[0];
-		        const { idade, categoria } = calcularIdadeECategoria(f.dataNasc);
-		        const categoriaPeso = calcularCategoriaPeso(f.genero, categoria, parseFloat(f.peso));
-		        const categoriaCompleta = categoriaPeso ? `${categoria} (${categoriaPeso})` : categoria;
-		        const rgDisplay = f.rg || 'N/A';
-		        const generoDisplay = f.genero === 'M' ? 'Masculino' : 'Feminino';
-		        const dataFormatada = formatarData(f.dataNasc);
-		
-		        // Determinar se é faixa intermediária e criar gradiente VERTICAL
-		        let borderStyle = `border-left-color: ${faixaData.cor};`;
-		        let badgeColor = faixaData.cor;
-		        let badgeTextColor = faixaData.textColor;
-		
-		        if (f.faixa.includes('p/')) {
-		            // É uma faixa intermediária - criar gradiente VERTICAL (de cima para baixo)
-		            const partes = f.faixa.split(' p/ ');
-		            const faixaAnterior = FAIXAS.find(x => x.nome === partes[0]);
-		            const faixaProxima = FAIXAS.find(x => x.nome === partes[1]);
-		            
-		            if (faixaAnterior && faixaProxima) {
-		                const cor1 = faixaAnterior.cor;
-		                const cor2 = faixaProxima.cor;
-		                // Gradiente VERTICAL: 2/3 superior cor1, 1/3 inferior cor2
-		                borderStyle = `border-left: 6px solid; border-image: linear-gradient(to bottom, ${cor1} 0%, ${cor1} 66.66%, ${cor2} 66.66%, ${cor2} 100%) 1;`;
-		                
-		                // Badge usa a cor da faixa anterior (2/3)
-		                badgeColor = cor1;
-		                badgeTextColor = faixaAnterior.textColor;
-		            }
-		        }
-		
-		        return `
-		            <div class="card" style="${borderStyle}">
-		                <div class="card-header">
-		                    <h3>${f.nome}</h3>
-		                    <span class="faixa-badge" style="background-color: ${badgeColor}; color: ${badgeTextColor};">
-		                        ${f.faixa}
-		                    </span>
-		                </div>
-		                <div class="card-body">
-		                    <div class="info-row">
-		                        <span class="info-label">CPF:</span>
-		                        <span class="info-value">${f.cpf}</span>
-		                    </div>
-		                    <div class="info-row">
-		                        <span class="info-label">RG:</span>
-		                        <span class="info-value">${rgDisplay}</span>
-		                    </div>
-		                    <div class="info-row">
-		                        <span class="info-label">Gênero:</span>
-		                        <span class="info-value">${generoDisplay}</span>
-		                    </div>
-		                    <div class="info-row">
-		                        <span class="info-label">Data Nasc:</span>
-		                        <span class="info-value">${dataFormatada}</span>
-		                    </div>
-		                    <div class="info-row">
-		                        <span class="info-label">Categoria:</span>
-		                        <span class="info-value">${categoriaCompleta}</span>
-		                    </div>
-		                    <div class="info-row">
-		                        <span class="info-label">Peso:</span>
-		                        <span class="info-value">${f.peso} kg</span>
-		                    </div>
-		                    <div class="info-row">
-		                        <span class="info-label">Altura:</span>
-		                        <span class="info-value">${f.altura ? f.altura + ' m' : 'N/A'}</span>
-		                    </div>
-		                    <div class="info-row">
-		                        <span class="info-label">Kimono:</span>
-		                        <span class="info-value">${f.kimono || 'N/A'}</span>
-		                    </div>
-		                </div>
-		                <div class="card-footer">
-		                    <div></div>
-		                    <button class="delete-btn" onclick="event.stopPropagation(); deleteFighter(${f.id})">🗑️</button>
-		                </div>
-		            </div>
-		        `;
-		    }).join('');
+			const grid = document.getElementById('grid');
+			if (fighters.length === 0) {
+				grid.innerHTML = `
+					<div class="empty-state">
+						<h2>Nenhum lutador cadastrado</h2>
+						<p>Clique em "+Lutador" para começar</p>
+					</div>
+				`;
+				return;
+			}
+			const fightetersSorted = [...fighters].sort((a, b) => 
+				a.nome.localeCompare(b.nome, 'pt-BR')
+			);
+			grid.innerHTML = fightetersSorted.map(f => {
+				const faixaData = FAIXAS.find(x => x.nome === f.faixa) || FAIXAS[0];
+				const { idade, categoria } = calcularIdadeECategoria(f.dataNasc);
+				const categoriaPeso = calcularCategoriaPeso(f.genero, categoria, parseFloat(f.peso));
+				const categoriaCompleta = categoriaPeso ? `${categoria} (${categoriaPeso})` : categoria;
+				const rgDisplay = f.rg || 'N/A';
+				const generoDisplay = f.genero === 'M' ? 'Masculino' : 'Feminino';
+				const dataFormatada = formatarData(f.dataNasc);
+
+				// Determinar se é faixa intermediária
+				let borderStyle = `border-left-color: ${faixaData.cor};`;
+				let badgeColor = faixaData.cor;
+				let badgeTextColor = faixaData.textColor;
+				let classeFaixa = '';
+
+				if (f.faixa.includes('p/')) {
+					// É uma faixa intermediária
+					const partes = f.faixa.split(' p/ ');
+					const faixaAnterior = FAIXAS.find(x => x.nome === partes[0]);
+					const faixaProxima = FAIXAS.find(x => x.nome === partes[1]);
+					
+					if (faixaAnterior && faixaProxima) {
+						const cor1 = faixaAnterior.cor;
+						const cor2 = faixaProxima.cor;
+						borderStyle = `--gradient-faixa: linear-gradient(to bottom, ${cor1} 0%, ${cor1} 66.66%, ${cor2} 66.66%, ${cor2} 100%);`;
+						classeFaixa = 'faixa-intermediaria';
+						
+						badgeColor = cor1;
+						badgeTextColor = faixaAnterior.textColor;
+					}
+				}
+
+				return `
+					<div class="card ${classeFaixa}" style="${borderStyle}" onclick="openModal('edit', ${f.id})">
+						<div class="card-header">
+							<h3>${f.nome}</h3>
+							<span class="faixa-badge" style="background-color: ${badgeColor}; color: ${badgeTextColor};">
+								${f.faixa}
+							</span>
+						</div>
+						<div class="card-body">
+							<div class="info-row">
+								<span class="info-label">CPF:</span>
+								<span class="info-value">${f.cpf}</span>
+							</div>
+							<div class="info-row">
+								<span class="info-label">RG:</span>
+								<span class="info-value">${rgDisplay}</span>
+							</div>
+							<div class="info-row">
+								<span class="info-label">Gênero:</span>
+								<span class="info-value">${generoDisplay}</span>
+							</div>
+							<div class="info-row">
+								<span class="info-label">Data Nasc:</span>
+								<span class="info-value">${dataFormatada}</span>
+							</div>
+							<div class="info-row">
+								<span class="info-label">Categoria:</span>
+								<span class="info-value">${categoriaCompleta}</span>
+							</div>
+							<div class="info-row">
+								<span class="info-label">Peso:</span>
+								<span class="info-value">${f.peso} kg</span>
+							</div>
+							<div class="info-row">
+								<span class="info-label">Altura:</span>
+								<span class="info-value">${f.altura ? f.altura + ' m' : 'N/A'}</span>
+							</div>
+							<div class="info-row">
+								<span class="info-label">Kimono:</span>
+								<span class="info-value">${f.kimono || 'N/A'}</span>
+							</div>
+						</div>
+						<div class="card-footer">
+							<div></div>
+							<button class="delete-btn" onclick="event.stopPropagation(); deleteFighter(${f.id})">🗑️</button>
+						</div>
+					</div>
+				`;
+			}).join('');
 		}
 
         function importJSON() {
