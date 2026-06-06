@@ -465,12 +465,37 @@
 						<option value="M3">M3</option>
 						<option value="M4">M4</option>
 						<option value="1,50">1,50</option>
+						<option value="1,55">1,50</option>
 						<option value="1,60">1,60</option>
+						<option value="1,60">1,65</option>
 						<option value="1,70">1,70</option>
+						<option value="1,70">1,75</option>
 						<option value="1,80">1,80</option>
+						<option value="1,85">1,80</option>
 						<option value="1,90">1,90</option>
+						<option value="1,90">1,95</option>
 						<option value="2,00+">2,00+</option>
 					</select>
+				</div>
+				<div class="form-group">
+				    <label>Tamanho da Faixa (m)</label>
+				    <select id="tamanhoFaixa">
+				        <option value="">Selecione (opcional)</option>
+				        <option value="2,00">2,00</option>
+				        <option value="2,10">2,10</option>
+				        <option value="2,20">2,20</option>
+				        <option value="2,30">2,30</option>
+				        <option value="2,40">2,40</option>
+				        <option value="2,50">2,50</option>
+				        <option value="2,60">2,60</option>
+				        <option value="2,70">2,70</option>
+				        <option value="2,80">2,80</option>
+				        <option value="2,90">2,90</option>
+				        <option value="3,00">3,00</option>
+				        <option value="3,10">3,10</option>
+				        <option value="3,20">3,20</option>
+				        <option value="3,30+">3,30+</option>
+				    </select>
 				</div>
             </div>
             <div class="modal-footer">
@@ -709,8 +734,9 @@
 			document.getElementById('dataNasc').value = '';
 			document.getElementById('peso').value = '';
 			document.getElementById('faixa').value = '';
-			document.getElementById('altura').value = '';  // NOVO
-			document.getElementById('kimono').value = '';  // NOVO
+			document.getElementById('altura').value = '';
+			document.getElementById('kimono').value = '';
+			document.getElementById('tamanhoFaixa').value = '';
 
 			if (type === 'edit' && id !== null) {
 				const fighter = fighters.find(f => f.id === id);
@@ -722,8 +748,9 @@
 					document.getElementById('dataNasc').value = fighter.dataNasc;
 					document.getElementById('peso').value = fighter.peso;
 					document.getElementById('faixa').value = fighter.faixa;
-					document.getElementById('altura').value = fighter.altura || '';  // NOVO
-					document.getElementById('kimono').value = fighter.kimono || '';  // NOVO
+					document.getElementById('altura').value = fighter.altura || '';
+					document.getElementById('kimono').value = fighter.kimono || '';
+					document.getElementById('tamanhoFaixa').value = fighter.tamanhoFaixa || '';
 				}
 			}
 
@@ -744,8 +771,9 @@
 			const dataNasc = document.getElementById('dataNasc').value;
 			const peso = document.getElementById('peso').value;
 			const faixa = document.getElementById('faixa').value;
-			const altura = document.getElementById('altura').value;  // NOVO
-			const kimono = document.getElementById('kimono').value;  // NOVO
+			const altura = document.getElementById('altura').value;
+			const kimono = document.getElementById('kimono').value;
+			const tamanhoFaixa = document.getElementById('tamanhoFaixa').value; 
 
 			if (!nome || !genero || !cpf || !dataNasc || !peso || !faixa) {
 				alert('Preencha todos os campos obrigatórios!');
@@ -791,8 +819,9 @@
 					dataNasc,
 					peso,
 					faixa,
-					altura,  // NOVO
-					kimono   // NOVO
+					altura,
+					kimono,
+					tamanhoFaixa
 				});
 			}
 
@@ -911,6 +940,8 @@
 								<span class="info-label">Kimono:</span>
 								<span class="info-value">${f.kimono || 'N/A'}</span>
 							</div>
+							<span class="info-label">Tamanho Faixa:</span>
+							    <span class="info-value">${f.tamanhoFaixa ? f.tamanhoFaixa + ' m' : 'N/A'}</span>
 						</div>
 						<div class="card-footer">
 							<div></div>
@@ -971,7 +1002,7 @@
                 return;
             }
 
-            let csv = 'Nome,Gênero,CPF,RG,Data de Nascimento,Peso (kg),Faixa,Categoria Completa\n';
+            let csv = 'Nome,Gênero,CPF,RG,Data de Nascimento,Peso (kg),Faixa,Altura (m),Kimono,Tamanho Faixa (m),Categoria Completa\n';
             
             fighters.forEach(f => {
                 const { idade, categoria } = calcularIdadeECategoria(f.dataNasc);
@@ -979,7 +1010,8 @@
                 const categoriaCompleta = categoriaPeso ? `${categoria} (${categoriaPeso})` : categoria;
                 const rg = f.rg || 'N/A';
                 const generoDisplay = f.genero === 'M' ? 'Masculino' : 'Feminino';
-                csv += `"${f.nome}","${generoDisplay}","${f.cpf}","${rg}","${f.dataNasc}","${f.peso}","${f.faixa}","${categoriaCompleta}"\n`;
+				const tamanhoFaixa = f.tamanhoFaixa || 'N/A';
+                csv += `"${f.nome}","${generoDisplay}","${f.cpf}","${rg}","${f.dataNasc}","${f.peso}","${f.faixa}","${altura}","${kimono}","${tamanhoFaixa}","${categoriaCompleta}"\n`;
             });
 
             const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
