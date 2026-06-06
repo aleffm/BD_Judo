@@ -145,6 +145,8 @@
 			position: relative;
 			border-left: 6px solid #1a1a1a;
 			pointer-events: auto;
+			display: flex;
+			flex-direction: column;
 		}
 
 		.card * {
@@ -210,20 +212,28 @@
         }
 
         .card-body {
-            padding: 16px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
+			padding: 12px 16px;
+			display: flex;
+			flex-direction: column;
+			gap: 8px;
+			flex: 1;
+		}
 
-        .info-row {
-            display: flex;
-            justify-content: space-between;
-            font-size: 13px;
-        }
+		.info-row {
+			display: flex;
+			justify-content: space-between;
+			font-size: 13px;
+		}
 
-        .info-label { color: #666; font-weight: 500; }
-        .info-value { color: #1a1a1a; font-weight: 600; }
+		.info-label { 
+			color: #666; 
+			font-weight: 500; 
+		}
+
+		.info-value { 
+			color: #1a1a1a; 
+			font-weight: 600; 
+		}
 
         body.dark-mode .info-label { color: #aaa; }
         body.dark-mode .info-value { color: #f5f5f5; }
@@ -369,11 +379,21 @@
         .modal-footer .btn-success { flex: 1; }
         .modal-footer .btn-success:disabled { background-color: #ccc; cursor: not-allowed; }
 
-        @media (max-width: 768px) {
-            .fighters-grid { grid-template-columns: 1fr; }
-            .button-group { grid-template-columns: repeat(2, 1fr); }
-            .modal-content { padding: 24px; }
-        }
+        @media (max-width: 480px) {
+			.fighters-grid { grid-template-columns: 1fr; }
+			.button-group { grid-template-columns: 1fr; }
+			.modal-content { padding: 20px; }
+			.card-body { gap: 6px; }
+		}
+
+		@media (min-width: 481px) and (max-width: 768px) {
+			.fighters-grid { grid-template-columns: repeat(2, 1fr); }
+			.button-group { grid-template-columns: repeat(2, 1fr); }
+		}
+
+		@media (min-width: 769px) {
+			.fighters-grid { grid-template-columns: repeat(3, 1fr); }
+		}
     </style>
 </head>
 <body>
@@ -773,7 +793,7 @@
 			const faixa = document.getElementById('faixa').value;
 			const altura = document.getElementById('altura').value;
 			const kimono = document.getElementById('kimono').value;
-			const tamanhoFaixa = document.getElementById('tamanhoFaixa').value; 
+			const tamanhoFaixa = document.getElementById('tamanhoFaixa').value;
 
 			if (!nome || !genero || !cpf || !dataNasc || !peso || !faixa) {
 				alert('Preencha todos os campos obrigatórios!');
@@ -806,8 +826,9 @@
 					dataNasc,
 					peso,
 					faixa,
-					altura,  // NOVO
-					kimono   // NOVO
+					altura,
+					kimono,
+					tamanhoFaixa  // ✅ ADICIONADO
 				};
 			} else {
 				fighters.push({
@@ -872,33 +893,29 @@
 				const { idade, categoria } = calcularIdadeECategoria(f.dataNasc);
 				const categoriaPeso = calcularCategoriaPeso(f.genero, categoria, parseFloat(f.peso));
 				const categoriaCompleta = categoriaPeso ? `${categoria} (${categoriaPeso})` : categoria;
-				const rgDisplay = f.rg || 'N/A';
+				// REMOVA: const rgDisplay = f.rg || 'N/A'; (não está sendo usado)
 				const generoDisplay = f.genero === 'M' ? 'Masculino' : 'Feminino';
-				const dataFormatada = formatarData(f.dataNasc);
-
-				// Determinar se é faixa intermediária
+				// REMOVA: const dataFormatada = formatarData(f.dataNasc); (não está sendo usado)
+				
 				let borderStyle = `border-left-color: ${faixaData.cor};`;
 				let badgeColor = faixaData.cor;
 				let badgeTextColor = faixaData.textColor;
 				let classeFaixa = '';
-
+				
 				if (f.faixa.includes('p/')) {
-					// É uma faixa intermediária
 					const partes = f.faixa.split(' p/ ');
 					const faixaAnterior = FAIXAS.find(x => x.nome === partes[0]);
 					const faixaProxima = FAIXAS.find(x => x.nome === partes[1]);
-					
 					if (faixaAnterior && faixaProxima) {
 						const cor1 = faixaAnterior.cor;
 						const cor2 = faixaProxima.cor;
 						borderStyle = `--gradient-faixa: linear-gradient(to bottom, ${cor1} 0%, ${cor1} 66.66%, ${cor2} 66.66%, ${cor2} 100%);`;
 						classeFaixa = 'faixa-intermediaria';
-						
 						badgeColor = cor1;
 						badgeTextColor = faixaAnterior.textColor;
 					}
 				}
-
+				
 				return `
 					<div class="card ${classeFaixa}" style="${borderStyle}" onclick="openModal('edit', ${f.id})">
 						<div class="card-header">
@@ -974,42 +991,40 @@
             URL.revokeObjectURL(url);
         }
 
-        function exportCSV() {
-            if (fighters.length === 0) {
-                alert('Nenhum lutador para exportar!');
-                return;
-            }
-
-            let csv = 'Nome,Gênero,CPF,RG,Data de Nascimento,Peso (kg),Faixa,Altura (m),Kimono,Tamanho Faixa (m),Categoria Completa\n';
-            
-            fighters.forEach(f => {
-                const { idade, categoria } = calcularIdadeECategoria(f.dataNasc);
-                const categoriaPeso = calcularCategoriaPeso(f.genero, categoria, parseFloat(f.peso));
-                const categoriaCompleta = categoriaPeso ? `${categoria} (${categoriaPeso})` : categoria;
-                const rg = f.rg || 'N/A';
-                const generoDisplay = f.genero === 'M' ? 'Masculino' : 'Feminino';
+		function exportCSV() {
+			if (fighters.length === 0) {
+				alert('Nenhum lutador para exportar!');
+				return;
+			}
+			let csv = 'Nome,Gênero,CPF,RG,Data de Nascimento,Peso (kg),Faixa,Altura (m),Kimono,Tamanho Faixa (m),Categoria Completa\n';
+			fighters.forEach(f => {
+				const { idade, categoria } = calcularIdadeECategoria(f.dataNasc);
+				const categoriaPeso = calcularCategoriaPeso(f.genero, categoria, parseFloat(f.peso));
+				const categoriaCompleta = categoriaPeso ? `${categoria} (${categoriaPeso})` : categoria;
+				const rg = f.rg || 'N/A';
+				const generoDisplay = f.genero === 'M' ? 'Masculino' : 'Feminino';
+				const altura = f.altura || 'N/A';
+				const kimono = f.kimono || 'N/A';
 				const tamanhoFaixa = f.tamanhoFaixa || 'N/A';
-                csv += `"${f.nome}","${generoDisplay}","${f.cpf}","${rg}","${f.dataNasc}","${f.peso}","${f.faixa}","${altura}","${kimono}","${tamanhoFaixa}","${categoriaCompleta}"\n`;
-            });
-
-            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-
-            if (isMobile && navigator.share) {
-                navigator.share({
-                    files: [new File([blob], 'bd-judo-aguai.csv', { type: 'text/csv' })]
-                }).catch(err => console.log(err));
-            } else {
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = 'bd-judo-aguai.csv';
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-            }
-        }
+				csv += `"${f.nome}","${generoDisplay}","${f.cpf}","${rg}","${f.dataNasc}","${f.peso}","${f.faixa}","${altura}","${kimono}","${tamanhoFaixa}","${categoriaCompleta}"\n`;
+			});
+			const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+			const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+			if (isMobile && navigator.share) {
+				navigator.share({
+					files: [new File([blob], 'bd-judo-aguai.csv', { type: 'text/csv' })]
+				}).catch(err => console.log(err));
+			} else {
+				const url = URL.createObjectURL(blob);
+				const a = document.createElement('a');
+				a.href = url;
+				a.download = 'bd-judo-aguai.csv';
+				document.body.appendChild(a);
+				a.click();
+				document.body.removeChild(a);
+				URL.revokeObjectURL(url);
+			}
+		}
     </script>
 </body>
 </html>
